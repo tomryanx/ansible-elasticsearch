@@ -21,6 +21,7 @@
     url: "{{es_api_uri}}/_xpack/license?acknowledge=true"
     user: "{{es_api_basic_auth_username}}"
     password: "{{es_api_basic_auth_password}}"
+    validate_certs: no
     body_format: json
     force_basic_auth: yes
     body: "{{ es_xpack_license }}"
