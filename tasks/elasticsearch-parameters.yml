@@ -56,11 +56,11 @@
   when: es_unique_instance_path | default(true)  = true
 
 - name: set fact instance_default_file
-  set_fact: instance_default_file={{default_file | dirname}}/{{instance_path_}}{{default_file | basename}}
+  set_fact: instance_default_file={{default_file | dirname}}/{{instance_path_ | default('')}}{{default_file | basename}}
 - name: set fact instance_init_script
-  set_fact: instance_init_script={{init_script | dirname }}/{{instance_path_}}_{{init_script | basename}}
+  set_fact: instance_init_script={{init_script | dirname }}/{{instance_path_ | default('') }}{{init_script | basename}}
 - name: set fact conf_dir
-  set_fact: conf_dir={{ es_conf_dir }}/{{instance_path | default()}}
+  set_fact: conf_dir={{ es_conf_dir }}/{{instance_path | default('')}}
 - name: set fact m_lock_enabled
   set_fact: m_lock_enabled={{ es_config['bootstrap.memory_lock'] is defined and es_config['bootstrap.memory_lock'] == True }}
 
