@@ -1,9 +1,16 @@
 ---
 
-- name: set fact es_script_dir
+- name: set fact es_script_dir with unique instance paths
   set_fact: es_script_dir={{ es_conf_dir }}/{{es_instance_name}}
   tags:
       - always
+  when: es_unique_instance_paths | default(true) = true
+
+- name: set fact es_script_dir without unique instance paths
+  set_fact: es_script_dir={{ es_conf_dir }}
+  tags:
+      - always
+  when: es_unique_instance_paths | default(true) = false
 
 - name: set fact es_script_dir when path.scripts
   set_fact: es_script_dir={{es_config['path.scripts']}}

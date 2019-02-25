@@ -13,7 +13,7 @@
 ### END INIT INFO
 
 PATH=/bin:/usr/bin:/sbin:/usr/sbin
-NAME={{es_instance_name}}_{{default_file | basename}}
+NAME={% if es_unique_instance_paths %}{{es_instance_name}}_{% endif %}{{default_file | basename}}
 {% if es_config['node.name'] is defined %}
 DESC="Elasticsearch Server - {{es_config['node.name']}}"
 {% else %}

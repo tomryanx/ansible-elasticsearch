@@ -39,12 +39,28 @@
      msg: "ERROR: INVALID CONFIG - YOU CANNOT CHANGE RESERVED USERS THROUGH THE FILE REALM. THE FOLLOWING CANNOT BE CHANGED: {{file_reserved_users}}. USE THE NATIVE REALM."
   when: file_reserved_users | default([]) | length > 0
 
+- name: set fact unique_instance_filepaths true
+  set_fact: unique_instance_filepaths=true
+  when: es_unique_instance_filepaths | default(true) = true
+
+- name: set fact unique_instance_filepaths false
+  set_fact: unique_instance_filepaths=false
+  when: es_unique_instance_filepaths | default(true) = false
+
+- name: set fact instance_path
+  set_fact: instance_path={{ es_instance_name }}_
+  when: es_unique_instance_path | default(true)  = true
+
+- name: set fact instance_path_
+  set_fact: instance_path={{ es_instance_name }}_
+  when: es_unique_instance_path | default(true)  = true
+
 - name: set fact instance_default_file
-  set_fact: instance_default_file={{default_file | dirname}}/{{es_instance_name}}_{{default_file | basename}}
+  set_fact: instance_default_file={{default_file | dirname}}/{{instance_path_}}{{default_file | basename}}
 - name: set fact instance_init_script
-  set_fact: instance_init_script={{init_script | dirname }}/{{es_instance_name}}_{{init_script | basename}}
+  set_fact: instance_init_script={{init_script | dirname }}/{{instance_path_}}_{{init_script | basename}}
 - name: set fact conf_dir
-  set_fact: conf_dir={{ es_conf_dir }}/{{es_instance_name}}
+  set_fact: conf_dir={{ es_conf_dir }}/{{instance_path | default()}}
 - name: set fact m_lock_enabled
   set_fact: m_lock_enabled={{ es_config['bootstrap.memory_lock'] is defined and es_config['bootstrap.memory_lock'] == True }}
 
@@ -61,12 +77,18 @@
   set_fact: use_system_d={{(ansible_distribution == 'Debian' and ansible_distribution_version is version_compare('8', '>=')) or (ansible_distribution in ['RedHat','CentOS'] and ansible_distribution_version is version_compare('7', '>=')) or (ansible_distribution == 'Ubuntu' and ansible_distribution_version is version_compare('15', '>=')) }}
 
 - name: set fact instance_sysd_script
-  set_fact: instance_sysd_script={{sysd_script | dirname }}/{{es_instance_name}}_{{sysd_script | basename}}
+  set_fact: instance_sysd_script={{sysd_script | dirname }}/{{instance_path_}}{{sysd_script | basename}}
   when: use_system_d
 #For directories we also use the {{inventory_hostname}}-{{ es_instance_name }} - this helps if we have a shared SAN.
 
-- name: set fact instance_suffix
+- name: set fact instance_suffix with unique paths
   set_fact: instance_suffix={{inventory_hostname}}-{{ es_instance_name }}
+  when: es_unique_instance_paths | default(true) = true
+  
+- name: set fact instance_suffix without unique paths
+  set_fact: instance_suffix=""
+  when: es_unique_instance_paths | default(true) = false
+  
 - name: set fact pid_dir
   set_fact: pid_dir={{ es_pid_dir }}/{{instance_suffix}}
 - name: set fact log_dir
