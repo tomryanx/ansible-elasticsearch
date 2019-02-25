@@ -39,21 +39,23 @@
      msg: "ERROR: INVALID CONFIG - YOU CANNOT CHANGE RESERVED USERS THROUGH THE FILE REALM. THE FOLLOWING CANNOT BE CHANGED: {{file_reserved_users}}. USE THE NATIVE REALM."
   when: file_reserved_users | default([]) | length > 0
 
-- name: set fact unique_instance_filepaths true
-  set_fact: unique_instance_filepaths=true
-  when: es_unique_instance_filepaths | default(true) = true
+- name: set fact unique_instance_paths true
+  set_fact: unique_instance_paths=true
+  when: es_unique_instance_paths | default(true)
 
-- name: set fact unique_instance_filepaths false
-  set_fact: unique_instance_filepaths=false
-  when: es_unique_instance_filepaths | default(true) = false
+- name: set fact unique_instance_paths false
+  set_fact: unique_instance_paths=false
+  when: not es_unique_instance_paths | default(true)
+
+- debug: var=unique_instance_paths
 
 - name: set fact instance_path
   set_fact: instance_path={{ es_instance_name }}_
-  when: es_unique_instance_path | default(true)  = true
+  when: es_unique_instance_path | default(true)
 
 - name: set fact instance_path_
   set_fact: instance_path={{ es_instance_name }}_
-  when: es_unique_instance_path | default(true)  = true
+  when: es_unique_instance_path | default(true)
 
 - name: set fact instance_default_file
   set_fact: instance_default_file={{default_file | dirname}}/{{instance_path_ | default('')}}{{default_file | basename}}
