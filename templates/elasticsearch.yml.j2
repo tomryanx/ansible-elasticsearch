@@ -19,7 +19,7 @@ node.name: {{inventory_hostname}}-{{es_instance_name}}
 path.conf: {{ conf_dir }}
 {% endif %}
 
-path.data: {{ data_dirs | array_to_str }}
+path.data: {{ data_dirs }}
 
 path.logs: {{ log_dir }}
 
